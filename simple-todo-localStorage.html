@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Simple ToDo List</title>
+  </head>
+  <body>
+    <h1 id="title">TO DO</h1>
+    <input type="text" id="inputTodo" />
+    <button type="submit" id="addTodo" onclick="addTodo()">Add</button>
+    <ol id="listTodo"></ol>
+
+    <script>
+      let todos = [];
+      const inputDOM = document.getElementById("inputTodo");
+      const addDOM = document.getElementById("addTodo");
+      const listDOM = document.getElementById("listTodo");
+
+      const setLocalStorage = () =>
+        localStorage.setItem("todoLists", JSON.stringify(todos));
+
+      const showTodo = () => {
+        // Empty the list todos to avoid added all last data to the new list todos
+        listDOM.innerHTML = "";
+        // Get all todos in localStorage and convert to object again
+        let getTodos = JSON.parse(localStorage.getItem("todoLists"));
+        // Condition to avoid error to push when the getTodos is null
+        if (getTodos !== null) {
+          todos = getTodos;
+          for (var i = 0; i < todos.length; i++) {
+            // Get the todos and save to variable coresponding name in the localStorage
+            let { todo, isComplete } = todos[i];
+            // Using ternary condition to set value of style text-decoration
+            listDOM.innerHTML += `<li style="text-decoration:${
+              isComplete ? "line-through" : "none"
+            }" id="list${i}" >${todo} <button onclick=completeTodo(${i})>✔</button> <button onclick=editTodo(${i})>✎</button> <button onclick=removeTodo(${i})>✘</button>
+          </li>`;
+          }
+        }
+      };
+
+      // Function Add ToDo
+      const addTodo = () => {
+        // Get value from input and save to data
+        let data = inputDOM.value;
+        // Condition to avoid user add a blank todo
+        if (!data) {
+          // Alert if the data/todo is empty
+          alert("Please input your To Do first !");
+        } else {
+          // Send the data/todo to global variable named todos
+          todos.push({
+            todo: data,
+            isComplete: false
+          });
+          // After send the todo, empty the input
+          inputDOM.value = "";
+          // Set to localStorage
+          setLocalStorage();
+          // Run showTodo function to show the new data
+          showTodo();
+        }
+      };
+
+      // Remove todo function
+      const removeTodo = i => {
+        // Array splice methode to remove an array items
+        todo.splice(i, 1);
+        setLocalStorage();
+        showTodo();
+      };
+
+      // Complete todo function
+      const completeTodo = i => {
+        const li = document.getElementById("list" + i);
+        // Not operator to get false or true
+        todos[i].isComplete = !todos[i].isComplete;
+        setLocalStorage();
+        showTodo();
+      };
+      // Edit todo function
+      const editTodo = i => {
+        inputDOM.value = todos[i].todo;
+        addDOM.innerHTML = "Save";
+        addDOM.onclick = () => {
+          saveEditedTodo(i);
+        };
+      };
+      // Save edited todo function
+      const saveEditedTodo = i => {
+        let data = inputDOM.value;
+        // Array splice methode to eidt an array items
+        todos.splice(i, 1, { todo: data });
+        addDOM.innerHTML = "Add";
+        addDOM.onclick = () => {
+          addTodo();
+        };
+        inputDOM.value = "";
+        setLocalStorage();
+        showTodo();
+      };
+
+      showTodo();
+    </script>
+  </body>
+</html>
