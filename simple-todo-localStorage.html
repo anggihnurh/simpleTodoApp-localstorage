@@ -80,6 +80,7 @@
         setLocalStorage();
         showTodo();
       };
+
       // Edit todo function
       const editTodo = i => {
         inputDOM.value = todos[i].todo;
@@ -98,6 +99,7 @@
           addTodo();
         };
         inputDOM.value = "";
+        todos[i].isComplete = !todos[i].isComplete;
         setLocalStorage();
         showTodo();
       };
